@@ -37,16 +37,8 @@ impl<'info> CreateMint<'info> {
     /// three-phase path: size via `try_calculate_account_len`, initialize
     /// every extension, seal with `InitializeMint2` last. Nothing can be added
     /// after that point, so a mistake here is permanent.
-    pub fn create_mint(
-        &mut self,
-        decimals: u8,
-        basis_points: u16,
-        maximum_fee: u64,
-    ) -> Result<()> {
-        require!(
-            basis_points <= MAX_FEE_BASIS_POINTS,
-            MintError::InvalidFee
-        );
+    pub fn create_mint(&mut self, decimals: u8, basis_points: u16, maximum_fee: u64) -> Result<()> {
+        require!(basis_points <= MAX_FEE_BASIS_POINTS, MintError::InvalidFee);
 
         let extensions = [
             ExtensionType::MetadataPointer,

@@ -2365,6 +2365,7 @@ dependencies = [
  "litesvm",
  "solana-account",
  "solana-compute-budget-interface",
+ "solana-instruction-error",
  "solana-keypair",
  "solana-message",
  "solana-signer",

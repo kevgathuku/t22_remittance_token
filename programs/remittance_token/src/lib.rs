@@ -20,6 +20,15 @@ pub mod remittance_token {
         basis_points: u16,
         maximum_fee: u64,
     ) -> Result<()> {
-        ctx.accounts.create_mint(decimals, basis_points, maximum_fee)
+        ctx.accounts
+            .create_mint(decimals, basis_points, maximum_fee)
+    }
+
+    pub fn transfer(ctx: Context<Transfer>, amount: u64) -> Result<()> {
+        ctx.accounts.transfer(amount)
+    }
+
+    pub fn thaw_account(ctx: Context<ThawAccount>) -> Result<()> {
+        ctx.accounts.thaw_account()
     }
 }

@@ -4,4 +4,6 @@ use anchor_lang::prelude::*;
 pub enum MintError {
     #[msg("fee can only be between 0 and 10,000 basis points")]
     InvalidFee,
+    #[msg("fee calculation overflowed")]
+    FeeOverflow,
 }
