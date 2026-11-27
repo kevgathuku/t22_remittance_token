@@ -28,6 +28,25 @@ pub mod remittance_token {
         ctx.accounts.transfer(amount)
     }
 
+    pub fn deposit_confidential(
+        ctx: Context<DepositConfidential>,
+        amount: u64,
+        decimals: u8,
+    ) -> Result<()> {
+        ctx.accounts.deposit_confidential(amount, decimals)
+    }
+
+    pub fn apply_pending_balance(
+        ctx: Context<ApplyPendingBalance>,
+        expected_pending_balance_credit_counter: u64,
+        new_decryptable_available_balance: [u8; AE_CIPHERTEXT_LEN],
+    ) -> Result<()> {
+        ctx.accounts.apply_pending_balance(
+            expected_pending_balance_credit_counter,
+            new_decryptable_available_balance,
+        )
+    }
+
     pub fn thaw_account(ctx: Context<ThawAccount>) -> Result<()> {
         ctx.accounts.thaw_account()
     }
