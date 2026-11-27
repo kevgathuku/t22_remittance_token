@@ -472,3 +472,49 @@ fn full_confidential_lifecycle() {
         TRANSFER_AMOUNT_CT - TRANSFER_FEE_CT - WITHDRAW_AMOUNT
     );
 }
+
+#[test]
+fn withdraw_without_apply_fails() {
+    let (mut svm, payer) = setup();
+    let (_fee_elgamal, fee_pubkey) = fee_keys(&payer);
+    let mint = create_mint_v2(&mut svm, &payer, fee_pubkey);
+
+    let owner = payer.insecure_clone();
+    let holder = create_and_configure(&mut svm, &payer, &mint.pubkey(), &owner);
+    thaw(&mut svm, &payer, &mint.pubkey(), &holder.account);
+    fund(
+        &mut svm,
+        &payer,
+        &mint.pubkey(),
+        &holder.account,
+        MINT_AMOUNT,
+    );
+    send(
+        &mut svm,
+        &payer,
+        &[deposit_ix(
+            &holder.account,
+            &mint.pubkey(),
+            &owner.pubkey(),
+            MINT_AMOUNT,
+        )],
+        &[&owner],
+    );
+
+    // 10,000 sits in pending; available is still zero. A withdraw proof
+    // commits to the available balance, so with nothing applied there is
+    // nothing to prove against — proof generation itself refuses.
+    let ct = read_ct(&svm, &holder.account);
+    assert_eq!(pending_balance(&ct, &holder.elgamal), MINT_AMOUNT);
+    assert_eq!(available_balance(&ct, &holder.elgamal), 0);
+
+    let current: ElGamalCiphertext = ct.available_balance.try_into().unwrap();
+    assert!(
+        withdraw_proof_data(&current, 0, WITHDRAW_AMOUNT, &holder.elgamal).is_err(),
+        "withdrawing unapplied funds should fail"
+    );
+
+    // Nothing moved.
+    let ct = read_ct(&svm, &holder.account);
+    assert_eq!(pending_balance(&ct, &holder.elgamal), MINT_AMOUNT);
+}

@@ -1,6 +1,6 @@
 # remittance_token
 
-[![CI](https://github.com/kevgathuku/remittance_token/actions/workflows/ci.yml/badge.svg)](https://github.com/kevgathuku/remittance_token/actions/workflows/ci.yml)
+[![CI](https://github.com/kevgathuku/t22_remittance_token/actions/workflows/ci.yml/badge.svg)](https://github.com/kevgathuku/t22_remittance_token/actions/workflows/ci.yml)
 
 A remittance stablecoin on Token-2022. The issuer earns a protocol fee on every transfer, new accounts start frozen until KYC clears them, and a re-issued mint adds seizure authority plus confidential transfers.
 
