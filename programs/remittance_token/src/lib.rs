@@ -31,4 +31,19 @@ pub mod remittance_token {
     pub fn thaw_account(ctx: Context<ThawAccount>) -> Result<()> {
         ctx.accounts.thaw_account()
     }
+
+    pub fn create_mint_v2(
+        ctx: Context<CreateMintV2>,
+        decimals: u8,
+        basis_points: u16,
+        maximum_fee: u64,
+        withdraw_withheld_authority_elgamal_pubkey: [u8; 32],
+    ) -> Result<()> {
+        ctx.accounts.create_mint_v2(
+            decimals,
+            basis_points,
+            maximum_fee,
+            withdraw_withheld_authority_elgamal_pubkey,
+        )
+    }
 }

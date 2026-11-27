@@ -19,7 +19,8 @@ pub struct ThawAccount<'info> {
 }
 
 impl<'info> ThawAccount<'info> {
-    /// Unfreeze a single account:  each holder is cleared individually.
+    /// Unfreeze one account. Separate from the mint-level default; each
+    /// holder clears individually after KYC.
     pub fn thaw_account(&self) -> Result<()> {
         let ix = spl_token_2022::instruction::thaw_account(
             &self.token_program.key(),

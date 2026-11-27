@@ -92,6 +92,47 @@ pub fn create_mint_ix(payer: &Pubkey, mint: &Pubkey, basis_points: u16) -> Instr
     }
 }
 
+pub fn create_mint_v2_ix(
+    payer: &Pubkey,
+    mint: &Pubkey,
+    basis_points: u16,
+    elgamal_pubkey: [u8; 32],
+) -> Instruction {
+    Instruction {
+        program_id: ID,
+        accounts: accounts::CreateMintV2 {
+            payer: *payer,
+            mint: *mint,
+            token_program: TOKEN_2022_PROGRAM_ID,
+            system_program: system_program::ID,
+        }
+        .to_account_metas(None),
+        data: instruction::CreateMintV2 {
+            decimals: DECIMALS,
+            basis_points,
+            maximum_fee: MAXIMUM_FEE,
+            withdraw_withheld_authority_elgamal_pubkey: elgamal_pubkey,
+        }
+        .data(),
+    }
+}
+
+pub fn create_mint_v2(svm: &mut LiteSVM, payer: &Keypair, elgamal_pubkey: [u8; 32]) -> Keypair {
+    let mint = Keypair::new();
+    send(
+        svm,
+        payer,
+        &[create_mint_v2_ix(
+            &payer.pubkey(),
+            &mint.pubkey(),
+            BASIS_POINTS,
+            elgamal_pubkey,
+        )],
+        &[&mint],
+    );
+    mint
+}
+
 pub fn create_mint(svm: &mut LiteSVM, payer: &Keypair) -> Keypair {
     let mint = Keypair::new();
     send(

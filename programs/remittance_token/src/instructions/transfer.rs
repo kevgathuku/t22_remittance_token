@@ -22,8 +22,8 @@ pub struct Transfer<'info> {
     #[account(mut, owner = token_program.key())]
     pub destination: UncheckedAccount<'info>,
 
-    /// CHECK: ownership enforced here; contents read via `StateWithExtensions`
-    /// in the handler. The typed account would hide the extensions.
+    /// CHECK: ownership enforced; read via `StateWithExtensions` since the
+    /// typed account hides extensions.
     #[account(owner = token_program.key())]
     pub mint: UncheckedAccount<'info>,
 
@@ -31,10 +31,8 @@ pub struct Transfer<'info> {
 }
 
 impl<'info> Transfer<'info> {
-    /// Move tokens, withholding the protocol fee.
-    ///
-    /// The fee is computed from the live mint config at the current epoch,
-    /// never from a rate the caller passes in
+    /// Move tokens, withholding the protocol fee computed live via
+    /// `calculate_epoch_fee` — never a caller-supplied or cached rate.
     pub fn transfer(&mut self, amount: u64) -> Result<()> {
         let (decimals, fee) = {
             let mint_info = self.mint.to_account_info();

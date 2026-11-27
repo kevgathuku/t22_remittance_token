@@ -17,6 +17,14 @@ mod common;
 use common::*;
 use remittance_token::{MintError, MAX_FEE_BASIS_POINTS};
 
+/// The expected v1 extension set, in init order.
+const EXTENSIONS: [ExtensionType; 4] = [
+    ExtensionType::MetadataPointer,
+    ExtensionType::MintCloseAuthority,
+    ExtensionType::TransferFeeConfig,
+    ExtensionType::DefaultAccountState,
+];
+
 #[test]
 fn mint_carries_exactly_the_four_declared_extensions() {
     let (mut svm, payer) = setup();
@@ -26,13 +34,7 @@ fn mint_carries_exactly_the_four_declared_extensions() {
     assert_eq!(account.owner, spl_token_2022_interface::ID);
 
     // The same calculation the program runs, computed here independently.
-    let expected = ExtensionType::try_calculate_account_len::<MintState>(&[
-        ExtensionType::MetadataPointer,
-        ExtensionType::MintCloseAuthority,
-        ExtensionType::TransferFeeConfig,
-        ExtensionType::DefaultAccountState,
-    ])
-    .unwrap();
+    let expected = ExtensionType::try_calculate_account_len::<MintState>(&EXTENSIONS).unwrap();
     assert_eq!(account.data.len(), expected);
 
     // All state reads go through `StateWithExtensions`, never raw unpack.
@@ -48,15 +50,7 @@ fn mint_carries_exactly_the_four_declared_extensions() {
         Some(payer.pubkey())
     );
     // TLV entries land in init order.
-    assert_eq!(
-        state.get_extension_types().unwrap(),
-        vec![
-            ExtensionType::MetadataPointer,
-            ExtensionType::MintCloseAuthority,
-            ExtensionType::TransferFeeConfig,
-            ExtensionType::DefaultAccountState,
-        ]
-    );
+    assert_eq!(state.get_extension_types().unwrap(), EXTENSIONS.to_vec());
 
     let pointer = state.get_extension::<MetadataPointer>().unwrap();
     assert_eq!(
