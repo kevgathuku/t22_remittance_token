@@ -170,10 +170,8 @@ fn extension_init_after_mint_init_fails() {
 
     // Match exact Token-2022's error name
     assert!(
-        format!("{:?}", err.meta.logs).contains(&format!(
-            "{:?}",
-            InstructionError::InvalidAccountData
-        )),
+        format!("{:?}", err.meta.logs)
+            .contains(&format!("{:?}", InstructionError::InvalidAccountData)),
         "wrong error: {:?}",
         err.err
     );
